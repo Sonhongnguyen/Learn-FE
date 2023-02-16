@@ -1,0 +1,806 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div>
+        {#<ul class="nav nav-pills mb-3  justify-content-center" id="pills-tab" role="tablist">#}
+            {#<li class="nav-item " role="presentation">#}
+                {#<a class="p-2 px-4 nav-link active tab-title btn-color" id="pills-home-tab"#}
+                   {#data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab"#}
+                   {#aria-controls="pills-home" aria-selected="true">Start Picking</a>#}
+                {##}
+                {##}
+            {#</li>#}
+            {#<li class="nav-item" role="presentation">#}
+                {#<a class="p-2 px-4 nav-link tab-title btn-color" id="pills-profile-tab" data-bs-toggle="pill"#}
+                   {#data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile"#}
+                   {#aria-selected="false">On Picking </a>#}
+            {#</li>#}
+            {#<li class="nav-item" role="presentation">#}
+                {#<a class="p-2 px-4 nav-link tab-title btn-color" id="pills-contact-tab" data-bs-toggle="pill"#}
+                   {#data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact"#}
+                   {#aria-selected="false">Hold</a>#}
+            {#</li>#}
+        {#</ul>#}
+
+        <ul class="choose_option_order nav nav-pills mb-3  justify-content-center" id="pills-tab" role="tablist">
+            <li class="nav-item " role="presentation" class="e-pills-start-picking-tab" >
+                <a class="p-2 px-4 nav-link active tab-title btn-color" id="pills-start-picking-tab"
+                   data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" data-toggle="tab"
+                   aria-controls="pills-home" aria-selected="true">Start Picking</a>
+            </li>
+            <li class="nav-item" role="presentation" class="e-pills-on-picking-tab" >
+                <a class="p-2 px-4 nav-link tab-title btn-color" id="pills-on-picking-tab" data-bs-toggle="pill" data-toggle="tab"
+                   data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile"
+                   aria-selected="false">On Picking </a>
+            </li>
+            <li class="nav-item" role="presentation" class="e-pills-hold-tab" >
+                <a class="p-2 px-4 nav-link tab-title btn-color" id="pills-hold-tab" data-bs-toggle="pill" data-toggle="tab"
+                   data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact"
+                   aria-selected="false">Hold</a>
+            </li>
+        </ul>
+
+    </div>
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+            <div class="row justify-content-center">
+                <div class="col-md-12">
+                    <div class="choose_option_product h-100 p-5  rounded-3 d-flex flex-wrap ">
+                        <div class="filter_order_type form-check form-check-inline px-5">
+                            <input class="d-none form-check-input"
+                                    {% if  select_all == true %} checked {% endif %}
+                                   type="checkbox" id="filter_selectall" value="option1">
+                            <label class="form-check-label" for="inlineCheckbox1">Select All </label>
+                        </div>
+                        {% set count = 0 %}  {#----------- Đặt biến đếm ban đầu là -------------0#}
+                        {% for brand,qty in filter %}
+            
+
+                            {% if brand == "Single Order" and qty > 0 %}
+                                <div class="filter_order_type form-check form-check-inline px-5 filter_option {% if 'single' in optionSelected %} selected {% endif %}">
+                                    <input class="d-none form-check-input single "
+                                            {% if 'single' in optionSelected %} checked {% endif %}
+                                           type="checkbox" id="inlineCheckbox_single" id="{{ brand }}"
+                                           value="single"  onclick="updateFilter()">
+                                    <label class="form-check-label" for="inlineCheckbox_single">{{ brand }} <span>{{ qty }}</span></label>
+                                </div>
+                            {% elseif brand == "Is Voluminous"  and qty > 0 %}
+
+                                <div class="filter_order_type form-check form-check-inline px-5 filter_option {% if 'is_voluminous' in optionSelected %} selected {% endif %}">
+                                    <input class="d-none form-check-input is_voluminous "
+                                            {% if 'is_voluminous' in optionSelected %} checked {% endif %}
+                                           type="checkbox" id="inlineCheckbox_is_voluminous"
+                                           id="{{ brand }}" value="is_voluminous" onclick="updateFilter()">
+                                    <label class="form-check-label" for="inlineCheckbox_is_voluminous">{{ brand }} <span>{{ qty }}</span></label>
+                                </div>
+
+                            {% else %}
+                                {% set count = count + 1 %} {#------------ bắt đầu đếm phần tử với count+1---------------#}
+                                {% set classAdditionalhide = '' %}
+                                {% set classAdditionalshow = '' %}
+                                    {% if count > 4 %}       {# ---------------điều kiện với count >4 ---------------#}
+                                        {% set classAdditionalhide = 'display:none' %} {# ---------------điều kiện với count >4  ---------------#}
+                                        {% set classAdditionalshow = 'show_brand' %}
+                                    {% endif %}
+
+                                <div style="{{classAdditionalhide}}" class="{{classAdditionalshow}} filter_order_type hihi form-check form-check-inline px-5 filter_option {% if brand in optionSelected %} selected {% endif %}" for="{{ brand }}">
+                                
+                                    <input class="d-none form-check-input brand filter_input" type="checkbox"
+                                           id="inlineCheckbox{{ brand }}" name="brands[]"
+                                           id="{{ brand }}" value="{{ brand }}"
+                                            {% if brand in optionSelected %} checked {% endif %}  onclick="updateFilter()">
+                                    <label class="form-check-label" for="inlineCheckbox{{ brand }}">{{ brand }} <span>{{ qty }}</span></label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="dropdown_seemore d-flex justify-content-end">
+                <div id="click_show_more" class="see_more_filter justify-content-end align-items-center d-flex">
+                    <span class="btn_seemore">see more</span> 
+                    <span class="btn_lessmore"> less more</span>
+                    <a class="icon_seemore" >
+                        <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.99999 5.172L11.95 0.222L13.364 1.636L6.99999 8L0.635986 1.636L2.04999 0.222L6.99999 5.172Z" fill="white"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            {% if products|length <= 0 %}
+                <div class="table-responsive" style="text-align: center;">
+                    <table class="table mt-3 align-middle">
+                        <p>There are no item available to pick</p>
+                    </table>
+                </div>
+            {% else %}
+                <div class="table-responsive list_product">
+
+                    <table class="table mt-3 align-middle d-none">
+                        {#<caption class="text-center">3 models / 6 quantities are selected</caption>#}
+                        <thead>
+                        <tr>
+                            <th scope="col" class="text-center">
+                                <input class="form-check-input" type="checkbox" id="selectAllItems">
+                            </th>
+                            <th scope="col" class="text-center">
+                                <a id="brand-title" class="{% if sortby == true %} desc {% else %} asc {% endif %}">Brand</a>
+                            </th>
+                            <th scope="col" class="text-center">Model Code</th>
+                            <th scope="col" class="text-center">Item Code</th>
+                            <th scope="col" class="text-center">Product Title</th>
+                            <th scope="col" class="text-center">Price</th>
+                            <th scope="col" class="text-center">Qty.</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for sku,product in products %}
+                                {% for items in product.product %}
+
+                                    <div >
+                                        <div class="d-none" scope="row">
+                                            <input class="form-check-input product_id to_pick_item" type="checkbox" id="inlineCheckbox4" name="productId[]"
+                                                   value="{% for item in items %}{{ item.getId() }},{% endfor %}">
+                                        </div>
+                                        <div class="content_product d-flex justify-content-between">
+                                            <div class="decription_product">{{ product.brand }} {{ product.name }}</div>
+                                            <div class="code_product">
+                                                <div>Model:{{ product.model }}</div>
+                                                <div>item:{{ sku }}</div>
+                                            </div>
+                                            <div class="price_product text-end">
+                                                <div class="text-center">{{ product.price }}</div>
+                                                <div class="text-end ">x{{ items|length }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="button_start_order justify-content-center d-flex button ">
+                    <a href="#" class="btn btn-primary btn-start-pick">Start</a>
+                </div>
+            {% endif %}
+
+        </div>
+        <div class="list_product_onpicking table-responsive tab-pane fade my_pick_product" id="pills-profile" role="tabpanel"
+             aria-labelledby="pills-profile-tab">
+            <table class="table mt-3 align-middle ">
+                <thead class="d-none">
+                <tr>
+                    <th scope="col" class="text-center">Brand</th>
+                    <th scope="col" class="text-center">Model Code</th>
+                    <th scope="col" class="text-center">Item Code</th>
+                    <th scope="col" class="text-center">Product Title</th>
+                    <th scope="col" class="text-center">Price</th>
+                    <th scope="col" class="text-center">Image</th>
+                    <th scope="col" class="text-center">Qty./Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for product in myPickProducts %}
+
+                        <div class="list-product d-flex">
+                            <div class="content_product_onpicking d-flex justify-content-between">
+                            <div >
+                                    <div class="d-flex">
+                                        <div class="text-center">
+                                            <div class="container justify-content-center d-flex">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <img src="{{ product.img }}" alt="Astronaut"
+                                                            class="rounded" width="64" height="64">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="info_product_onpacking">
+                                            <div class="decription_product_onpicking">{{ product.brand }}{{ product.product_name }}</div>
+                                            <div class="code_price_product d-flex justify-content-between">
+                                                <div class="code_product_onpicking">
+                                                    <div >model: {{ product.model }}</div>
+                                                    <div >item: {{ product.sku }}</div>
+                                                </div>
+                                                <div calss="price_product">
+                                                    ₩{{ product.price }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class=" button_onpicker res_hold_count_btn text-center action d-flex">
+                                        <div class="number_product_onpacking">
+                                            <div class=" container m-0 justify-content-center align-items-center d-flex">
+                                                <button id="decrement" onclick="stepper(this, {{ product.sku }})"> 
+                                                    <svg width="12" height="2" viewBox="0 0 12 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M0.166687 0.166668H11.8334V1.83333H0.166687V0.166668Z" fill="#00689D"/>
+                                                    </svg>
+                                                </button>
+                                                <input type="number" min="0" step="1" value="{{ product.total_qty }}" id="my-input" class="my-input-{{ product.sku }} mypick_number" name="mypickitem" attr-sku="{{ product.sku }}" max="{{ product.total_qty }}" readonly>
+                                                <button id="increment" onclick="stepper(this, {{ product.sku }})"> 
+                                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M5.16667 5.16666V0.166664H6.83334V5.16666H11.8333V6.83333H6.83334V11.8333H5.16667V6.83333H0.166672V5.16666H5.16667Z" fill="#00689D"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="hold_reset_btn_onpicking d-flex">
+                                            <div >
+                                                <button type="button" class="btn hold_mypick">Hold</button>
+                                            </div>
+                                            <div>
+                                                <button type="button" class="btn revert_mypick">Revert</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                                <div class="text-center button_done_onpicking align-self-end action">
+                                    <button type="button" class="btn btn-primary complete_mypick">Done</button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if myPickProducts|length <= 0 %}
+                    <div class="content_noproduct_onpick" >
+                        <p>No products are on the list</p>
+                    </div>
+            {% endif %}
+        </div>
+        <div class="tab-pane fade " id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+            <div class="table-responsive list_product_onpicking">
+                <table class="table mt-3 align-middle">
+                    <thead class="d-none">
+                    <tr>
+                        <th scope="col" class="text-center"></th>
+                        <th scope="col" class="text-center" >Category</th>
+                        <th scope="col" class="text-center">Model Code</th>
+                        <th scope="col" class="text-center">Item Code</th>
+                        <th scope="col" class="text-center">Product Title</th>
+                        <th scope="col" class="text-center">Price</th>
+                        <th scope="col" class="text-center">Qty.</th>
+                        <th scope="col" class="text-center"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in holdingItems %}
+                            <div class="holding_item">
+                                <div class="d-none" scope="row">
+                                    <input class="form-check-input holding_sku" type="checkbox" id="{{ product.sku }}" value="{{ product.sku }}">
+                                </div>
+                                <div class="content_product_onpicking ">
+                                    <div class="d-flex">
+                                        <div class="text-center">
+                                            <div class="container justify-content-center d-flex">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <img src="{{ product.img }}" alt="Astronaut"
+                                                            class="rounded" width="64" height="64">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="info_product_onpacking">
+                                            <div class="decription_product_onpicking">{{ product.brand }} {{ product.product_name }}</div>
+                                            <div class="code_price_product">
+                                                <div class="code_product_onpicking">
+                                                    <div >M{{ product.model }} - i{{ product.sku }}</div>
+                                                </div>
+                                                <div calss="price_product">
+                                                    {{ product.price }} KRW
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex res_hold_count_btn">
+                                        <div class="number_product_hold">
+                                            <div class="container justify-content-center align-items-center d-flex">
+                                                <button id="decrement" onclick="stepper1(this, {{ product.sku }} )">
+                                                    <svg width="12" height="2" viewBox="0 0 12 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M0.166687 0.166668H11.8334V1.83333H0.166687V0.166668Z" fill="#00689D"/>
+                                                    </svg>
+                                                </button>
+                                                <input type="number" step="1" value="{{ product.total_qty }}" id="my-input" class="my-inputh-{{ product.sku }}  hold_number" name="myholdingitem" attr-sku="{{ product.sku }}" max="{{ product.total_qty }}" readonly>
+                                                <button id="increment" onclick="stepper1(this, {{ product.sku }} )">
+                                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M5.16667 5.16666V0.166664H6.83334V5.16666H11.8333V6.83333H6.83334V11.8333H5.16667V6.83333H0.166672V5.16666H5.16667Z" fill="#00689D"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex">
+                                            <div class=" button_unhold_packing align-self-end">
+                                                <button class="btn btn-secondary mb-2 btn-lg btn-unhold" type="button">Unhold</button>
+                                            </div>
+                                            <div class=" button_comment_hold align-self-end">
+                                                <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop" attr-ids="{{ product.picking_ids }}" attr-sku="{{ product.sku }}" onclick="comment({{ product.sku }},'{{ product.picking_ids }}')" class="btn btn-primary comment_picking">Comment</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- <hr> -->
+            <div class="row mt-4">
+                
+                {#<div class="col-md-4">#}
+                    {#<button class="btn btn-primary w-100 btn-lg" type="button"><svg#}
+                                {#xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"#}
+                                {#preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">#}
+                            {#<path fill="currentColor" fill-rule="evenodd"#}
+                                  {#d="M9.066 1a2.2 2.2 0 1 0 .001 4.4h2.2V3.2a2.202 2.202 0 0 0-2.2-2.2Zm0 5.867H3.2a2.2 2.2 0 0 0 0 4.4h5.866a2.2 2.2 0 1 0 0-4.4ZM23 9.066a2.2 2.2 0 0 0-4.4 0v2.2h2.2a2.2 2.2 0 0 0 2.2-2.2Zm-5.867 0V3.2a2.2 2.2 0 0 0-4.4 0v5.866a2.2 2.2 0 1 0 4.4 0ZM14.933 23a2.2 2.2 0 1 0 0-4.4h-2.2v2.2a2.201 2.201 0 0 0 2.2 2.2Zm0-5.868H20.8a2.2 2.2 0 0 0 0-4.4h-5.866a2.2 2.2 0 0 0-.001 4.4ZM1 14.933a2.2 2.2 0 0 0 4.4 0v-2.2H3.2a2.2 2.2 0 0 0-2.2 2.2Zm5.867 0v5.866a2.2 2.2 0 0 0 4.4.001v-5.866a2.2 2.2 0 0 0-4.4-.001Z"#}
+                                  {#clip-rule="evenodd" />#}
+                        {#</svg> Share</button>#}
+                {#</div>#}
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content write_comment">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5 title_write_cmt" id="staticBackdropLabel">Message History</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body message_content border-bottom border-top">
+                    </div>
+                    <div class="modal-footer">
+                        <textarea id="comment" name="comment" rows="4" cols="50"></textarea>
+                        <button type="button" class="btn btn-primary btn-comment" onclick="submitComment()">Comment</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript">
+
+
+        let currentUrl = window.location.href;
+
+        let urlParams = new URLSearchParams(window.location.search);
+        let tab = urlParams.get('tab');
+        if(tab == 'picking'){
+
+            var activeTab = 'pills-start-picking-tab';
+
+        }else if(tab == 'mypicking'){
+
+            var activeTab = 'pills-on-picking-tab';
+        }else if(tab == 'holding'){
+
+            var activeTab = 'pills-hold-tab';
+        }
+
+
+        if (activeTab) {
+            var triggerEl = document.querySelector(
+                `#pills-tab a[id="${activeTab}"]`
+            );
+            var tabTrigger = new bootstrap.Tab(triggerEl);
+            tabTrigger.show();
+        }
+
+
+        //PICKING JS
+        $('.btn-start-pick').click(function(event){
+
+            var items = [];
+
+            $('.to_pick_item').each(function(){
+                if($(this).is(":checked")){
+                    var itemIds = $(this).val();
+                    items.push(itemIds);
+                }
+            });
+
+            if(items.length > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: '{{ action_url }}',
+                    data: {productId: items},
+                    dataType: "json",
+                    encode: true,
+                }).done(function (data) {
+                    if (data.status == false) {
+
+                        alert(data.message);
+                    } else {
+
+                        const myUrlWithParams = new URL(currentUrl);
+                        myUrlWithParams.searchParams.delete("tab");
+                        myUrlWithParams.searchParams.append("tab", 'mypicking');
+                        window.location.replace(myUrlWithParams.href);
+
+                    }
+                });
+            }else{
+                alert("You need select item first!");
+            }
+            event.preventDefault();
+        });
+
+        $('.list-product').click(function () {
+            var input = $(this).find('.product_id');
+
+            if ($(this).hasClass('taked')) {
+                $(this).removeClass('taked');
+                input.prop("checked", false);
+
+            } else {
+                $(this).addClass('taked');
+                input.prop("checked", true);
+            }
+        });
+
+        $('td').click(function () {
+            var trElement = $(this).parent('tr');
+            var input = trElement.find('.product_id');
+
+            if (trElement.hasClass('taked')) {
+                trElement.removeClass('taked');
+                input.prop("checked", false);
+
+            } else {
+                trElement.addClass('taked');
+                input.prop("checked", true);
+
+            }
+        });
+
+        //ajax for hold function
+        $('body').delegate('.hold_mypick','click', function(){
+            var parentelement = $(this).closest('.action');
+            var numberInput = parentelement.find('.mypick_number');
+            var qty = numberInput.val();
+            var sku = numberInput.attr('attr-sku');
+
+            $.ajax({
+                type: "POST",
+                url: '{{picking_holding_url}}',
+                data: {sku: sku, qty: qty},
+                encode: true,
+            }).done(function (data) {
+                if(data.status == false){
+
+                    alert(data.message);
+                }else{
+
+                    const myUrlWithParams = new URL(currentUrl);
+                    myUrlWithParams.searchParams.delete("tab");
+                    myUrlWithParams.searchParams.append("tab", 'holding');
+                    window.location.replace(myUrlWithParams.href);
+                }
+            });
+        });
+        
+        {#------ click để add class d-flex(display: flex) ẩn hiện brand ------ #}
+        $('#click_show_more').click(function(){
+            $('.show_brand').slideToggle('d-flex');
+        })
+        
+        {#------ click để add class ẩn hiện thay đổi class và style button------ #}
+        $(document).ready(function(){
+            $("#click_show_more").click(function(){
+                $(this).toggleClass("change_button_see");
+            });
+        });
+
+        //ajax for revert function
+        $('body').delegate('.revert_mypick','click', function(){
+            var parentelement = $(this).closest('.action');
+            var numberInput = parentelement.find('.mypick_number');
+            var qty = numberInput.val();
+            var sku = numberInput.attr('attr-sku');
+
+            $.ajax({
+                type: "POST",
+                url: '{{picking_revert_url}}',
+                data: {sku: sku, qty: qty},
+                encode: true,
+            }).done(function (data) {
+                if(data.status == false){
+
+                    alert(data.message);
+                }else{
+
+                    const myUrlWithParams = new URL(currentUrl);
+                    myUrlWithParams.searchParams.delete("tab");
+                    myUrlWithParams.searchParams.append("tab", 'picking');
+                    window.location.replace(myUrlWithParams.href);
+                }
+            });
+        });
+
+        //complete my picking item
+        $('body').delegate('.complete_mypick','click', function(){
+            var parentelement = $(this).closest('.action');
+            var numberInput = parentelement.find('.mypick_number');
+            var qty = numberInput.val();
+            var sku = numberInput.attr('attr-sku');
+
+            $.ajax({
+                type: "POST",
+                url: '{{complete_my_pick_url}}',
+                data: {sku: sku, qty: qty},
+                encode: true,
+            }).done(function (data) {
+                if(data.status == false){
+
+                    alert(data.message);
+                }else{
+
+                    const myUrlWithParams = new URL(currentUrl);
+                    myUrlWithParams.searchParams.delete("tab");
+                    myUrlWithParams.searchParams.append("tab", 'mypicking');
+                    window.location.replace(myUrlWithParams.href);
+                }
+            });
+        });
+
+        //ajax for unhold function
+        $('body').delegate('.btn-unhold','click', function(){
+
+            var obj = {};
+
+            $('.holding_item').each(function(){
+
+                var skuElement = $(this).find('.holding_sku');
+                if(skuElement.is(":checked")){
+                    var sku = skuElement.val();
+                    var number = $(this).find('.hold_number').val();
+                    obj[sku] = number;
+                }
+            });
+
+            if(Object.keys(obj).length > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: '{{picking_unholding_url}}',
+                    data: {items: obj},
+                    dataType: "json",
+                    encode: true,
+                }).done(function (data) {
+                    if(data.status == false){
+
+                        alert(data.message);
+                    }else{
+
+                        const myUrlWithParams = new URL(currentUrl);
+                        myUrlWithParams.searchParams.delete("tab");
+                        myUrlWithParams.searchParams.append("tab", 'mypicking');
+                        window.location.replace(myUrlWithParams.href);
+                    }
+                });
+            }else {
+                alert('Please select items');
+            }
+        });
+
+        $('#filter_selectall').on("click",function(){
+
+            if($(this).is(":checked")){
+                $('.filter_input').prop( "checked", true);
+                // $('.filter_input').addClass('selected');
+            }else{
+                $('.filter_input').prop( "checked", false);
+                // $('.filter_input').removeClass('selected');
+            }
+            updateFilter();
+        });
+
+        $('#brand-title').on("click",function(){
+
+            if($(this).hasClass('asc')){
+                $(this).removeClass('asc');
+                $(this).addClass('desc');
+            }else{
+                $(this).removeClass('desc');
+                $(this).addClass('asc');
+            }
+            updateFilter();
+        });
+
+        function updateFilter(){
+
+            const myUrlWithParams = new URL('{{ picking_list_url }}');
+
+            var arr = new Array();
+            $('input.brand').each(function () {
+                if (this.checked) {
+                    arr.push($(this).val());
+                }
+            });
+
+            if(arr.length > 0 ){
+                myUrlWithParams.searchParams.append("brands", arr);
+            }
+
+            if($('input.single').is(':checked')){
+                myUrlWithParams.searchParams.append("single", 1);
+            }
+
+            if($('input.is_voluminous').is(':checked')){
+                myUrlWithParams.searchParams.append("is_voluminous", 1);
+            }
+
+            if($('input#filter_selectall').is(':checked')){
+                myUrlWithParams.searchParams.append("select_all", 1);
+            }
+
+            if($('#brand-title').hasClass('desc')){
+                myUrlWithParams.searchParams.append("sortby", 1);
+            }
+
+            window.location.replace(myUrlWithParams.href);
+        }
+
+        {#$('.filter_option').click(function () {#}
+
+            {#const myUrlWithParams = new URL('{{ picking_list_url }}');#}
+            {#var input = $(this).find('input');#}
+
+            {#// if ($(this).hasClass('selected')) {#}
+            {#//     $(this).removeClass('selected');#}
+            {#//     input.prop("checked", false);#}
+            {#//#}
+            {#// } else {#}
+            {#//     $(this).addClass('selected');#}
+            {#//     input.prop("checked", true);#}
+            {#//#}
+            {#// }#}
+
+            {#if($('input.single').is(':checked')){#}
+                {#myUrlWithParams.searchParams.append("single", 1);#}
+            {#}#}
+
+            {#if($('input.is_voluminous').is(':checked')){#}
+                {#myUrlWithParams.searchParams.append("is_voluminous", 1);#}
+            {#}#}
+
+            {#var arr = new Array();#}
+            {#$('input.brand').each(function () {#}
+                {#if (this.checked) {#}
+                    {#arr.push($(this).val());#}
+                {#}#}
+            {#});#}
+
+            {#if(arr.length > 0 ){#}
+                {#myUrlWithParams.searchParams.append("brands", arr);#}
+            {#}#}
+            {#window.location.replace(myUrlWithParams.href);#}
+        {#});#}
+
+        $('.btnselectall').click(function(){
+
+            var current = $(this);
+            $('.list-product').each(function () {
+                $(this).click();
+            });
+
+            if(!current.hasClass('selectall')){
+
+                current.html('UnSelect All');
+                current.addClass('selectall');
+                current.removeClass('unselectall');
+            }else{
+                current.html('Select All');
+                current.addClass('unselectall');
+                current.removeClass('selectall');
+            }
+        });
+
+
+
+        // ____________________________________________________
+        const listInputs = document.querySelectorAll("#my-input");
+        function stepper(btn, index) {
+            let myInput = null;
+            [...listInputs].forEach(function (ele) {
+                // console.log(ele);
+                myInput = document.querySelector(`.my-input-${index}`);
+            });
+            let id = btn.getAttribute("id");
+            let min = myInput.getAttribute("min");
+            let max = myInput.getAttribute("max");
+            let step = myInput.getAttribute("step");
+            let val = myInput.getAttribute("value");
+            let calcStep = id == "increment" ? step * 1 : step * -1;
+            let newValue = parseInt(val) + calcStep;
+
+
+            if (newValue <= max && id == 'increment') {
+                myInput.setAttribute("value", newValue);
+            }
+
+            if (newValue > 0 && id == 'decrement') {
+                myInput.setAttribute("value", newValue);
+            }
+        }
+
+
+        const listInputs1 = document.querySelectorAll("#my-input");
+        function stepper1(btn, index) {
+            let myInput = null;
+            [...listInputs1].forEach(function (ele) {
+                // console.log(ele);
+                myInput = document.querySelector(`.my-inputh-${index}`);
+            });
+            let id = btn.getAttribute("id");
+            let min = myInput.getAttribute("min");
+            let max = myInput.getAttribute("max");
+            let step = myInput.getAttribute("step");
+            let val = myInput.getAttribute("value");
+            let calcStep = id == "increment" ? step * 1 : step * -1;
+            let newValue = parseInt(val) + calcStep;
+
+            if (newValue <= max && id == 'increment') {
+                myInput.setAttribute("value", newValue);
+            }
+
+            if (newValue > 0 && id == 'decrement') {
+                myInput.setAttribute("value", newValue);
+            }
+        }
+
+
+        function comment(sku, pickIds) {
+
+
+            $.ajax({
+                type: "POST",
+                url: '{{ comment_url }}',
+                data: {sku: sku,picking_ids:pickIds},
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+
+                $('.message_content').html(data.comments);
+                $('#comment').attr('sku',sku);
+                $('#comment').attr('picking_id',pickIds);
+
+            });
+        }
+
+        function submitComment() {
+
+            var commentElement = $('#comment');
+            var sku = commentElement.attr('sku');
+            var pickingIds = commentElement.attr('picking_id');
+            var comment = commentElement.val();
+
+            $.ajax({
+                type: "POST",
+                url: '{{ add_comment_url }}',
+                data: {sku: sku, picking_ids:pickingIds, comment:comment},
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+
+                $('.message_content').html(data.comments);
+            });
+
+        }
+
+
+        $('#selectAllItems').on("click",function(e){
+            if($(this).is(':checked')){
+                $('.to_pick_item').prop("checked", true)
+            }else {
+                $('.to_pick_item').prop("checked", false)
+            }
+        });
+
+
+
+    
+
+    </script>
+
+{% endblock %}
